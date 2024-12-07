@@ -1,0 +1,119 @@
+.App {
+  text-align: center;
+  background: linear-gradient(to right, #2193b0, #6dd5ed);
+  min-height: 100vh;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+header {
+  margin-bottom: 30px;
+  text-align: center;
+  color:#fff;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+header p {
+  font-size: 1.5rem;
+  margin: 10px 0;
+  font-weight: italic;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+
+}
+
+input {
+  margin: 15px 0;
+  padding: 10px;
+  width: 300px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.unit-toggle {
+  margin: 20px 0;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+
+.unit-toggle label:first-child {
+  margin-left: -100px;
+}
+
+.unit-toggle label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unit-toggle input {
+  margin-right: 2px;
+}
+
+.weather-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  max-width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.forecast {
+  margin-top: 20px;
+}
+
+.forecast-graph {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.forecast-item {
+  text-align: center;
+  margin: 10px;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  margin: 10px auto;
+}
+
+.icon.sunny {
+  background: url("sun.png") no-repeat center;
+  background-size: contain;
+}
+
+.icon.cloudy {
+  background: url("cloudy.png") no-repeat center;
+  background-size: contain;
+}
+
+.icon.rainy {
+  background: url("rainy-day.png") no-repeat center;
+  background-size: contain;
+}
+
+.icon.snowy {
+  background: url("snow.png") no-repeat center;
+  background-size: contain;
+}
+
+.icon.default {
+  background: url("default.png") no-repeat center;
+  background-size: contain;
+}
