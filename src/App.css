@@ -94,26 +94,26 @@ input {
 }
 
 .icon.sunny {
-  background: url("sun.png") no-repeat center;
+  background: url("assets/sun.png") no-repeat center;
   background-size: contain;
 }
 
 .icon.cloudy {
-  background: url("cloudy.png") no-repeat center;
+  background: url("assets/cloudy.png") no-repeat center;
   background-size: contain;
 }
 
 .icon.rainy {
-  background: url("rainy-day.png") no-repeat center;
+  background: url("assets/rainy-day.png") no-repeat center;
   background-size: contain;
 }
 
 .icon.snowy {
-  background: url("snow.png") no-repeat center;
+  background: url("assets/snow.png") no-repeat center;
   background-size: contain;
 }
 
 .icon.default {
-  background: url("default.png") no-repeat center;
+  background: url("assets/default.png") no-repeat center;
   background-size: contain;
 }
