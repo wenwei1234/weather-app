@@ -1,51 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './App.css';
 import axios from "axios";
 
 function App() {
+  // State to track current unit
   const [unit, setUnit] = useState("metric");
-  const [weatherData, setWeatherData] = useState(null);
+  // State to store raw data from API
+  const [rawWeatherData, setRawWeatherData] = useState(null);
+  // State to store city 
+  const [city, setCity] = useState("");
 
-  // Helper function to fetch weather data
-  const fetchWeatherData = async (endpoint, city, unit) => {
+  // Fetch data from API 
+  const fetchWeatherData = async (city) => {
     const apiKey = process.env.REACT_APP_API_KEY;
     const baseURL = "https://api.openweathermap.org/data/2.5";
 
     try {
-      const response = await axios.get(
-        `${baseURL}${endpoint}?q=${city}&units=${unit}&appid=${apiKey}`
+      const currentWeatherResponse = await axios.get(
+        `${baseURL}/weather?q=${city}&units=metric&appid=${apiKey}`
       );
-      return response.data;
-    } catch (error) {
-      console.error(`Error while fetching ${endpoint} data:`, error);
-      throw new Error("Unable to fetch weather data");
-    }
-  };
+      const forecastWeatherResponse = await axios.get(
+        `${baseURL}/forecast?q=${city}&units=metric&appid=${apiKey}`
+      );
 
-  // Fetch the data from API using axios 
-  const fetchWeather = async (city, unit = "metric") => {
-    try {
-    
-      const currentWeatherData = await fetchWeatherData("/weather", city, unit);
-
-      const forecastWeatherData = await fetchWeatherData("/forecast", city, unit);
-
-      // Store the Weather Data
-      setWeatherData({
-        current: currentWeatherData,
-        forecast: forecastWeatherData,
+      // Store fetched data
+      setRawWeatherData({
+        current: currentWeatherResponse.data,
+        forecast: forecastWeatherResponse.data,
       });
     } catch (error) {
+      console.error("Error while fetching weather data:", error);
       alert("Please enter a valid city or try again.");
     }
   };
 
-  // Change unit when radio selected
+  // Fetch data when city changes
+  useEffect(() => {
+    if (city) {
+      fetchWeatherData(city);
+    }
+  }, [city]);
+
+  // Function to change temp unit
   const changeUnit = (newUnit) => {
     setUnit(newUnit);
-    if (weatherData && weatherData.current) {
-      fetchWeather(weatherData.current.name, newUnit);
-    }
   };
 
   const Header = () => (
@@ -55,7 +53,7 @@ function App() {
     </header>
   );
 
-  // Change the weather Unit
+  // Radio buttons for unit
   const WeatherToggle = () => (
     <div className="unit-toggle">
       <label>
@@ -81,10 +79,22 @@ function App() {
     </div>
   );
 
-  // Current Weather
-  const WeatherInfo = () => {
-    const { current } = weatherData;
+  // Convert unit locally
+  const convertTemperature = (temp, fromUnit, toUnit) => {
+    if (fromUnit === toUnit) return temp;
+    return toUnit === "imperial" ? temp * 1.8 + 32 : (temp - 32) / 1.8;
+  };
 
+  // Component to display current weather
+  const WeatherInfo = () => {
+    const { current } = rawWeatherData;
+    const temperature = convertTemperature(
+      current.main.temp,
+      "metric",
+      unit
+    );
+
+    // Function to get weather icons
     const getCustomWeatherIcon = (description) => {
       switch (description.toLowerCase()) {
         case "clear sky":
@@ -107,23 +117,22 @@ function App() {
         {getCustomWeatherIcon(current.weather[0].description)}
         <p>{current.weather[0].description}</p>
         <h3>
-          {current.main.temp}° {unit === "metric" ? "C" : "F"}
+          {temperature.toFixed(1)}° {unit === "metric" ? "C" : "F"}
         </h3>
       </div>
     );
   };
 
-  // Weather Forecast for 1 Week
+  // Component to display weekly forecast
   const WeeklyForecast = () => {
-    // Group the forecast data by day
-    const forecastData = weatherData.forecast.list
+    const forecastData = rawWeatherData.forecast.list
       .filter((item, index, self) => {
-        // Keep only the first item for each day
         const forecastDate = new Date(item.dt * 1000);
         const day = forecastDate.getDate();
         const month = forecastDate.getMonth();
         const year = forecastDate.getFullYear();
 
+        // Only the first forecast item is kept for each day
         return (
           self.findIndex((other) => {
             const otherDate = new Date(other.dt * 1000);
@@ -135,18 +144,22 @@ function App() {
           }) === index
         );
       })
-      .slice(0, 7); // Show 7 days of forecast
+      .slice(0, 7);
 
     return (
       <div className="forecast">
         <h3>7-Day Forecast</h3>
         <div className="forecast-graph">
           {forecastData.map((item, index) => {
-            // Convert time to Date
             const forecastDate = new Date(item.dt * 1000);
-            // Format date to GB
             const formattedDate = new Intl.DateTimeFormat("en-GB").format(
               forecastDate
+            );
+
+            const temperature = convertTemperature(
+              item.main.temp,
+              "metric",
+              unit
             );
 
             return (
@@ -154,7 +167,7 @@ function App() {
                 <p>{formattedDate}</p>
                 <div className="icon forecast">{item.weather[0].description}</div>
                 <p>
-                  {item.main.temp}° {unit === "metric" ? "C" : "F"}
+                  {temperature.toFixed(1)}° {unit === "metric" ? "C" : "F"}
                 </p>
               </div>
             );
@@ -172,10 +185,10 @@ function App() {
         type="text"
         placeholder="Enter city"
         onKeyDown={(e) => {
-          if (e.key === "Enter") fetchWeather(e.target.value);
+          if (e.key === "Enter") setCity(e.target.value);
         }}
       />
-      {weatherData && (
+      {rawWeatherData && (
         <>
           <WeatherInfo />
           <WeeklyForecast />
